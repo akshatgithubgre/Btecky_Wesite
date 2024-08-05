@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Form</title>
+</head>
+<body>
+  <form id="userForm">
+    <input type="text" id="name" name="name" placeholder="Name" required>
+    <input type="email" id="email" name="email" placeholder="Email" required>
+    <input type="number" id="age" name="age" placeholder="Age">
+    <button type="submit">Submit</button>
+  </form>
+  
+  <div id="users"></div>
+
+  <script>
+    document.getElementById('userForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const age = document.getElementById('age').value;
+
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, age })
+      });
+
+      const data = await response.json();
+      console.log('User added:', data);
+      fetchUsers(); // Refresh the list of users
+    });
+
+    async function fetchUsers() {
+      const response = await fetch('http://localhost:3000/users');
+      const users = await response.json();
+      const usersDiv = document.getElementById('users');
+      usersDiv.innerHTML = '';
+      users.forEach(user => {
+        const userDiv = document.createElement('div');
+        userDiv.textContent = `Name: ${user.name}, Email: ${user.email}, Age: ${user.age}`;
+        usersDiv.appendChild(userDiv);
+      });
+    }
+
+    fetchUsers(); // Initial load of users
+  </script>
+</body>
+</html>
